@@ -1,8 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --vscode-editor-background: #ffffff;
+  --vscode-editor-foreground: #000000;
+  --vscode-side-bar-background: #f3f3f3;
+  --vscode-panel-background: #ffffff;
+  --vscode-block-background: var(--vscode-panel-background);
+  --vscode-input-background: #ffffff;
+  --vscode-list-hover-background: #f0f0f0;
+  --vscode-list-active-background: #e8e8e8;
+  --vscode-border: #e0e0e0;
+  --vscode-description-foreground: #6a6a6a;
+  --vscode-accent: #007acc;
+  --vscode-accent-foreground: #ffffff;
+  --vscode-success: #16825d;
+  --vscode-warning: #bf8803;
+  --vscode-danger: #d13438;
+  --vscode-scrollbar-track: #f1f1f1;
+  --vscode-scrollbar-thumb: #c1c1c1;
+  --vscode-scrollbar-thumb-hover: #a8a8a8;
+  --vscode-widget-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+  --background: var(--vscode-editor-background);
+  --foreground: var(--vscode-editor-foreground);
 }
 
 @theme inline {
@@ -12,10 +32,51 @@
   --font-mono: var(--font-geist-mono);
 }
 
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --vscode-editor-background: #1e1e1e;
+  --vscode-editor-foreground: #d4d4d4;
+  --vscode-side-bar-background: #252526;
+  --vscode-panel-background: #2d2d30;
+  --vscode-block-background: var(--vscode-panel-background);
+  --vscode-input-background: #3c3c3c;
+  --vscode-list-hover-background: #2a2d2e;
+  --vscode-list-active-background: #04395e;
+  --vscode-border: #3c3c3c;
+  --vscode-description-foreground: #858585;
+  --vscode-accent: #007acc;
+  --vscode-accent-foreground: #ffffff;
+  --vscode-success: #89d185;
+  --vscode-warning: #cca700;
+  --vscode-danger: #f48771;
+  --vscode-scrollbar-track: #1e1e1e;
+  --vscode-scrollbar-thumb: #424242;
+  --vscode-scrollbar-thumb-hover: #4f4f4f;
+  --vscode-widget-shadow: 0 16px 40px rgb(0 0 0 / 32%);
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --vscode-editor-background: #1e1e1e;
+    --vscode-editor-foreground: #d4d4d4;
+    --vscode-side-bar-background: #252526;
+    --vscode-panel-background: #2d2d30;
+    --vscode-block-background: var(--vscode-panel-background);
+    --vscode-input-background: #3c3c3c;
+    --vscode-list-hover-background: #2a2d2e;
+    --vscode-list-active-background: #04395e;
+    --vscode-border: #3c3c3c;
+    --vscode-description-foreground: #858585;
+    --vscode-accent: #007acc;
+    --vscode-accent-foreground: #ffffff;
+    --vscode-success: #89d185;
+    --vscode-warning: #cca700;
+    --vscode-danger: #f48771;
+    --vscode-scrollbar-track: #1e1e1e;
+    --vscode-scrollbar-thumb: #424242;
+    --vscode-scrollbar-thumb-hover: #4f4f4f;
+    --vscode-widget-shadow: 0 16px 40px rgb(0 0 0 / 32%);
   }
 }
 
@@ -23,4 +84,199 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  scrollbar-color: var(--vscode-scrollbar-thumb) var(--vscode-scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--vscode-scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbar-thumb);
+  border: 3px solid var(--vscode-scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-scrollbar-thumb-hover);
+}
+
+.local-shell {
+  background: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+.local-shell .shadow-lg,
+.local-shell .shadow-xl,
+.local-shell .shadow-2xl {
+  box-shadow: var(--vscode-widget-shadow);
+}
+
+.local-shell .backdrop-blur-md {
+  backdrop-filter: none;
+}
+
+.local-shell .bg-slate-950,
+.local-shell .bg-slate-950\/40,
+.local-shell .bg-slate-950\/80,
+.local-shell .bg-slate-955,
+.local-shell .bg-slate-955\/40 {
+  background-color: var(--vscode-block-background);
+}
+
+.local-shell .bg-slate-900,
+.local-shell .bg-slate-900\/40,
+.local-shell .bg-slate-900\/50,
+.local-shell .bg-slate-900\/60,
+.local-shell .bg-slate-900\/70,
+.local-shell .bg-slate-900\/80 {
+  background-color: var(--vscode-block-background);
+}
+
+.local-shell .bg-slate-800,
+.local-shell .bg-slate-800\/10,
+.local-shell .bg-slate-800\/20,
+.local-shell .bg-slate-800\/40,
+.local-shell .bg-slate-800\/50,
+.local-shell .bg-slate-800\/80,
+.local-shell .bg-slate-850 {
+  background-color: var(--vscode-block-background);
+}
+
+.local-shell .hover\:bg-slate-800:hover,
+.local-shell .hover\:bg-slate-800\/50:hover,
+.local-shell .hover\:bg-slate-850:hover,
+.local-shell .hover\:bg-slate-700:hover {
+  background-color: var(--vscode-list-hover-background);
+}
+
+.local-shell .border-slate-950,
+.local-shell .border-slate-900,
+.local-shell .border-slate-850,
+.local-shell .border-slate-800,
+.local-shell .border-slate-800\/40,
+.local-shell .border-slate-800\/60,
+.local-shell .border-slate-800\/80,
+.local-shell .border-slate-750,
+.local-shell .border-slate-700,
+.local-shell .border-slate-700\/50 {
+  border-color: var(--vscode-border);
+}
+
+.local-shell .text-slate-100,
+.local-shell .text-slate-200 {
+  color: var(--vscode-editor-foreground);
+}
+
+.local-shell .text-slate-300,
+.local-shell .text-slate-350,
+.local-shell .text-slate-400,
+.local-shell .text-slate-500,
+.local-shell .text-slate-650 {
+  color: var(--vscode-description-foreground);
+}
+
+.local-shell .placeholder-slate-500::placeholder,
+.local-shell .placeholder-slate-650::placeholder {
+  color: var(--vscode-description-foreground);
+}
+
+.local-shell .bg-indigo-600,
+.local-shell .hover\:bg-indigo-500:hover {
+  background-color: var(--vscode-accent);
+}
+
+.local-shell .text-indigo-300,
+.local-shell .text-indigo-400,
+.local-shell .hover\:text-indigo-300:hover,
+.local-shell .text-sky-100,
+.local-shell .text-sky-200,
+.local-shell .text-sky-300,
+.local-shell .text-sky-400 {
+  color: var(--vscode-accent);
+}
+
+.local-shell .border-indigo-500,
+.local-shell .border-indigo-500\/20,
+.local-shell .border-sky-500\/20,
+.local-shell .focus\:border-indigo-500:focus,
+.local-shell .focus\:border-sky-500:focus {
+  border-color: color-mix(in srgb, var(--vscode-accent) 40%, transparent);
+}
+
+.local-shell .bg-sky-600,
+.local-shell .hover\:bg-sky-500:hover {
+  background-color: var(--vscode-block-background);
+}
+
+.local-shell .hover\:text-slate-200:hover,
+.local-shell .hover\:text-slate-300:hover,
+.local-shell .hover\:text-white:hover {
+  color: var(--vscode-editor-foreground);
+}
+
+.local-shell .hover\:border-slate-700:hover {
+  border-color: var(--vscode-border);
+}
+
+.local-shell .focus\:ring-indigo-500:focus {
+  --tw-ring-color: color-mix(in srgb, var(--vscode-accent) 40%, transparent);
+}
+
+.local-shell .focus\:ring-offset-slate-900:focus {
+  --tw-ring-offset-color: var(--vscode-editor-background);
+}
+
+.local-shell .bg-indigo-500\/5,
+.local-shell .bg-indigo-500\/10,
+.local-shell .bg-indigo-600\/25,
+.local-shell .bg-sky-500\/10,
+.local-shell .bg-indigo-950\/20,
+.local-shell .bg-indigo-950\/60 {
+  background-color: var(--vscode-block-background);
+}
+
+.local-shell .text-emerald-300,
+.local-shell .text-emerald-400 {
+  color: var(--vscode-success);
+}
+
+.local-shell .bg-emerald-500\/10 {
+  background-color: var(--vscode-block-background);
+}
+
+.local-shell .border-emerald-500\/20,
+.local-shell .border-emerald-500\/30 {
+  border-color: color-mix(in srgb, var(--vscode-success) 40%, transparent);
+}
+
+.local-shell .text-amber-300,
+.local-shell .text-amber-400 {
+  color: var(--vscode-warning);
+}
+
+.local-shell .bg-amber-500\/10 {
+  background-color: var(--vscode-block-background);
+}
+
+.local-shell .border-amber-500\/20,
+.local-shell .border-amber-500\/30 {
+  border-color: color-mix(in srgb, var(--vscode-warning) 40%, transparent);
+}
+
+.local-shell .text-rose-400 {
+  color: var(--vscode-danger);
+}
+
+.local-shell .bg-rose-500\/10,
+.local-shell .hover\:bg-rose-500\/20:hover {
+  background-color: var(--vscode-block-background);
+}
+
+.local-shell .border-rose-500\/20 {
+  border-color: color-mix(in srgb, var(--vscode-danger) 40%, transparent);
 }

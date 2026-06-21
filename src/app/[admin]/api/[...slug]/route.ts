@@ -1,5 +1,4 @@
 import { getAdminPath, readEnv } from '@/_utils/dotenv'
-import db from '@/_components/admin/_utils/db'
 import { guardApi } from '@/_utils/guard'
 import { getAdminModuleApi } from '@/_modules/registry'
 
@@ -40,7 +39,7 @@ async function handleRequest(
       } else {
         return Response.json({ status: 'error', error: 'Invalid username or password' }, { status: 401 })
       }
-    } catch (err) {
+    } catch {
       return Response.json({ status: 'error', error: 'Invalid request body' }, { status: 400 })
     }
   }
@@ -76,8 +75,8 @@ async function handleRequest(
   }
 
   try {
-    const module = await importFn()
-    const handler = module[method as keyof typeof module]
+    const adminApiModule = await importFn()
+    const handler = adminApiModule[method as keyof typeof adminApiModule]
 
     if (typeof handler === 'function') {
       return await handler(request, context)
@@ -87,10 +86,11 @@ async function handleRequest(
         { status: 405 }
       )
     }
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
     console.error(`Error in admin API dynamic hook for /${adminPath}/api/${route}:`, error)
     return Response.json(
-      { error: 'Internal Server Error', message: error.message },
+      { error: 'Internal Server Error', message },
       { status: 500 }
     )
   }

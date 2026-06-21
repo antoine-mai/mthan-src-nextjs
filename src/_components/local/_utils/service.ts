@@ -9,7 +9,7 @@ const getContextAdminPath = () => {
   return getAdminPath()
 }
 
-export const adminService = {
+export const localService = {
   async getDashboardStats(): Promise<DashboardStats> {
     const adminPath = getContextAdminPath()
     const res = await fetch(`/${adminPath}/api`)

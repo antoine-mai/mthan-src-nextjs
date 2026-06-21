@@ -3,11 +3,7 @@ import { getAdminPath } from '@/_utils/dotenv'
 import { getLoginPathFromDb } from '@/_utils/db-config'
 import { guardPage } from '@/_utils/guard'
 import { getModulePage, getAdminModuleSettings } from '@/_modules/registry'
-import AdminLayout from '@/_components/admin/layout'
-import AdminDashboard from '@/_components/admin/pages/dashboard'
-import AdminUsers from '@/_components/admin/pages/users'
-import AdminSettings from '@/_components/admin/pages/settings'
-import UserLogin from '@/_components/login'
+import { Local, Login } from '@/_components'
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>
@@ -22,7 +18,7 @@ export default async function CatchAllPage({ params }: PageProps) {
 
   // 1. Check if it's the public user login route (configured dynamically via database)
   if (slug && slug.length === 1 && slug[0] === loginPath) {
-    return <UserLogin />
+    return <Login />
   }
 
   // 2. Check if it's an admin route (e.g. starting with /[admin_path])
@@ -32,9 +28,9 @@ export default async function CatchAllPage({ params }: PageProps) {
     // A. Root admin page "/[adminPath]"
     if (adminSlug.length === 0) {
       return (
-        <AdminLayout adminPath={adminPath}>
-          <AdminDashboard />
-        </AdminLayout>
+        <Local.Layout adminPath={adminPath}>
+          <Local.Dashboard />
+        </Local.Layout>
       )
     }
 
@@ -43,9 +39,9 @@ export default async function CatchAllPage({ params }: PageProps) {
       if (adminSlug.length === 1) {
         // "/[adminPath]/settings"
         return (
-          <AdminLayout adminPath={adminPath}>
-            <AdminSettings />
-          </AdminLayout>
+          <Local.Layout adminPath={adminPath}>
+            <Local.Settings />
+          </Local.Layout>
         )
       }
 
@@ -56,11 +52,11 @@ export default async function CatchAllPage({ params }: PageProps) {
         if (!config) notFound()
         const { default: Component } = await config.importFn()
         return (
-          <AdminLayout adminPath={adminPath}>
+          <Local.Layout adminPath={adminPath}>
             <div className="space-y-6">
               <Component />
             </div>
-          </AdminLayout>
+          </Local.Layout>
         )
       }
 
@@ -70,11 +66,31 @@ export default async function CatchAllPage({ params }: PageProps) {
     // D. Other direct admin pages like "/[adminPath]/users"
     if (adminSlug.length === 1) {
       const route = adminSlug[0]
+      if (route === 'login') {
+        return <Local.Login adminPath={adminPath} />
+      }
+
       if (route === 'users') {
         return (
-          <AdminLayout adminPath={adminPath}>
-            <AdminUsers />
-          </AdminLayout>
+          <Local.Layout adminPath={adminPath}>
+            <Local.Users />
+          </Local.Layout>
+        )
+      }
+
+      if (route === 'databases') {
+        return (
+          <Local.Layout adminPath={adminPath}>
+            <Local.Databases />
+          </Local.Layout>
+        )
+      }
+
+      if (route === 'storages') {
+        return (
+          <Local.Layout adminPath={adminPath}>
+            <Local.Storages />
+          </Local.Layout>
         )
       }
     }
@@ -89,11 +105,14 @@ export default async function CatchAllPage({ params }: PageProps) {
     notFound()
   }
 
+  let Component
   try {
-    const { default: Component } = await importFn()
-    return <Component />
+    const modulePage = await importFn()
+    Component = modulePage.default
   } catch (error) {
     console.error(`Failed to dynamically load module for route: /${route}`, error)
     notFound()
   }
+
+  return <Component />
 }

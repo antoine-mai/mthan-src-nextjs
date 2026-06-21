@@ -1,0 +1,78 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    env:
+      APP_NAME: mthan-src-nextjs
+      PORT: ${{ vars.PORT || '3000' }}
+      DEPLOY_SHARED_DIR: ${{ vars.DEPLOY_SHARED_DIR || '/home/antoine/apps/mthan-src-nextjs/shared' }}
+
+    steps:
+      - name: Preserve runtime state before checkout
+        run: |
+          mkdir -p "$DEPLOY_SHARED_DIR"
+          if [ -f .env ] && [ ! -f "$DEPLOY_SHARED_DIR/.env" ]; then
+            cp -aL .env "$DEPLOY_SHARED_DIR/.env"
+          fi
+          if [ -d .data ] && [ ! -d "$DEPLOY_SHARED_DIR/.data" ]; then
+            cp -aL .data "$DEPLOY_SHARED_DIR/.data"
+          fi
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Link runtime state
+        run: |
+          mkdir -p "$DEPLOY_SHARED_DIR/.data"
+          if [ -n "$ENV_FILE" ]; then
+            printf '%s\n' "$ENV_FILE" > "$DEPLOY_SHARED_DIR/.env"
+          fi
+
+          if [ ! -f "$DEPLOY_SHARED_DIR/.env" ]; then
+            echo "::warning::No .env found in DEPLOY_SHARED_DIR and ENV_FILE secret is empty."
+          fi
+
+          rm -f .env
+          rm -rf .data
+
+          if [ -f "$DEPLOY_SHARED_DIR/.env" ]; then
+            ln -s "$DEPLOY_SHARED_DIR/.env" .env
+          fi
+          ln -s "$DEPLOY_SHARED_DIR/.data" .data
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+
+      - name: Clean previous build
+        run: rm -rf .next
+
+      - name: Build application
+        run: npm run build
+
+      - name: Verify PM2
+        run: pm2 --version
+
+      - name: Restart application with PM2
+        run: |
+          pm2 reload "$APP_NAME" --update-env || pm2 start npm --name "$APP_NAME" -- start
+          pm2 save

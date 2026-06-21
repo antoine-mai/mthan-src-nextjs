@@ -1,11 +1,11 @@
 import React from 'react'
 
-export default function AdminDashboard() {
+export default function LocalDashboard() {
   const stats = [
-    { title: 'Total Users', value: '1,284', change: '+12.3%', trend: 'up', icon: '👥', color: 'from-blue-500/20 to-indigo-500/5 text-blue-400 border-blue-500/30' },
-    { title: 'Active Sessions', value: '412', change: '+8.4%', trend: 'up', icon: '⚡', color: 'from-amber-500/20 to-orange-500/5 text-amber-400 border-amber-500/30' },
-    { title: 'Monthly Revenue', value: '$12,480', change: '+24.1%', trend: 'up', icon: '💵', color: 'from-emerald-500/20 to-teal-500/5 text-emerald-400 border-emerald-500/30' },
-    { title: 'System Load', value: '24.2%', change: '-3.1%', trend: 'down', icon: '⚙️', color: 'from-purple-500/20 to-pink-500/5 text-purple-400 border-purple-500/30' }
+    { title: 'Total Users', value: '1,284', change: '+12.3%', trend: 'up', icon: 'US' },
+    { title: 'Active Sessions', value: '412', change: '+8.4%', trend: 'up', icon: 'SE' },
+    { title: 'Monthly Revenue', value: '$12,480', change: '+24.1%', trend: 'up', icon: 'MR' },
+    { title: 'System Load', value: '24.2%', change: '-3.1%', trend: 'down', icon: 'LD' }
   ]
 
   const recentActivities = [
@@ -17,33 +17,30 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-slate-100">Dashboard Overview</h2>
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950 border border-slate-800 p-6 md:p-8 relative overflow-hidden shadow-xl">
-        <div className="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-indigo-500/10 to-transparent pointer-events-none" />
-        <div className="space-y-2 relative z-10">
-          <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
+      <h2 className="text-xl font-bold text-[var(--vscode-editor-foreground)]">Dashboard Overview</h2>
+      <div className="border border-[var(--vscode-border)] bg-[var(--vscode-block-background)] p-6 shadow-xl md:p-8">
+        <div className="space-y-2">
+          <h3 className="text-2xl font-extrabold tracking-tight text-[var(--vscode-editor-foreground)] md:text-3xl">
             Welcome back, Administrator
           </h3>
-          <p className="text-slate-400 text-sm md:text-base max-w-2xl leading-relaxed">
+          <p className="max-w-2xl text-sm leading-relaxed text-[var(--vscode-description-foreground)] md:text-base">
             The platform is running smoothly. Your modules are successfully mounted and listening on dynamic catch-all hooks.
           </p>
         </div>
       </div>
 
-      {/* Grid of Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
           <div
             key={stat.title}
-            className={`bg-slate-900/60 border p-6 backdrop-blur-md bg-gradient-to-br ${stat.color} shadow-lg transition duration-300 hover:-translate-y-1`}
+            className="border border-[var(--vscode-border)] bg-[var(--vscode-block-background)] p-6 shadow-lg transition duration-300 hover:-translate-y-1"
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-slate-400">{stat.title}</span>
-              <span className="text-2xl">{stat.icon}</span>
+              <span className="text-sm font-semibold text-[var(--vscode-description-foreground)]">{stat.title}</span>
+              <span className="border border-[var(--vscode-border)] bg-[var(--vscode-block-background)] px-1.5 py-1 text-xs font-bold text-[var(--vscode-accent)]">{stat.icon}</span>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <span className="text-3xl font-bold tracking-tight text-slate-100">{stat.value}</span>
+              <span className="text-3xl font-bold tracking-tight text-[var(--vscode-editor-foreground)]">{stat.value}</span>
               <span
                 className={`text-xs font-semibold px-2 py-0.5 ${
                   stat.trend === 'up'
@@ -58,9 +55,7 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Two Column Layout for Table/Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Activity Table */}
         <div className="bg-slate-900/40 border border-slate-800 backdrop-blur-md p-6 lg:col-span-2 shadow-xl">
           <div className="flex items-center justify-between mb-6">
             <h4 className="text-lg font-bold text-slate-100">Recent Audit Logs</h4>
@@ -104,7 +99,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Quick System Diagnostics */}
         <div className="bg-slate-900/40 border border-slate-800 backdrop-blur-md p-6 shadow-xl space-y-6">
           <h4 className="text-lg font-bold text-slate-100">System Hook Diagnostics</h4>
           <div className="space-y-4">
@@ -131,10 +125,10 @@ export default function AdminDashboard() {
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-medium text-slate-400">
                 <span>Page Cache Hit</span>
-                <span className="text-purple-400 font-semibold">87.5% Hit Rate</span>
+                <span className="text-indigo-400 font-semibold">87.5% Hit Rate</span>
               </div>
               <div className="w-full bg-slate-850 h-2 overflow-hidden">
-                <div className="bg-purple-500 h-full w-[87.5%]" />
+                <div className="bg-indigo-500 h-full w-[87.5%]" />
               </div>
             </div>
           </div>

@@ -41,7 +41,7 @@ export default function WebsitesSettings() {
           <div className="space-y-2">
             <label className="text-xs font-semibold text-slate-400">SSL Authority Provider</label>
             <select className="w-full px-4 py-2.5 bg-slate-955 border border-slate-800 text-sm text-slate-355 focus:outline-none focus:border-indigo-500 transition">
-              <option>Let's Encrypt</option>
+              <option>{"Let's Encrypt"}</option>
               <option>ZeroSSL</option>
               <option>Custom CA Authority</option>
             </select>
@@ -52,7 +52,7 @@ export default function WebsitesSettings() {
           <button className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition">
             Check Server Health
           </button>
-          <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-500/20 transition">
+          <button className="border border-[color-mix(in_srgb,var(--vscode-accent)_45%,transparent)] bg-[var(--vscode-block-background)] px-5 py-2.5 text-sm font-semibold text-[var(--vscode-accent)] transition hover:bg-[var(--vscode-list-hover-background)]">
             Save Domains Config
           </button>
         </div>

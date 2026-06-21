@@ -1,4 +1,4 @@
-import db from '@/_components/admin/_utils/db'
+import db from '@/_components/local/_utils/db'
 
 export async function getLoginPathFromDb(): Promise<string> {
   try {

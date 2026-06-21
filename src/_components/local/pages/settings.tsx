@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function AdminSettings() {
+export default function LocalSettings() {
   return (
     <div className="space-y-6 max-w-4xl">
       <h2 className="text-xl font-bold text-slate-100">System Settings</h2>
@@ -62,7 +62,7 @@ export default function AdminSettings() {
             <button className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition">
               Reset Defaults
             </button>
-            <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-500/20 transition">
+            <button className="border border-[color-mix(in_srgb,var(--vscode-accent)_45%,transparent)] bg-[var(--vscode-block-background)] px-5 py-2.5 text-sm font-semibold text-[var(--vscode-accent)] transition hover:bg-[var(--vscode-list-hover-background)]">
               Save Configuration
             </button>
           </div>

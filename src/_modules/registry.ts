@@ -28,16 +28,22 @@ export interface LoginHookConfig {
 }
 
 export const pagesRegistry: Record<string, () => Promise<PageModule>> = {
+  'blog': () => import('./blog/pages/index'),
   'products': () => import('./products/pages/index'),
   'websites': () => import('./websites/pages/index')
 }
 
 export const apisRegistry: Record<string, () => Promise<ApiModule>> = {
+  'blog': () => import('./blog/api/route'),
   'products': () => import('./products/api/route'),
   'websites': () => import('./websites/api/route')
 }
 
 export const moduleSettingsRegistry: Record<string, SettingsModuleConfig> = {
+  'blog': {
+    label: 'Blog Config',
+    importFn: () => import('./blog/admin/pages/settings')
+  },
   'products': {
     label: 'Products Config',
     importFn: () => import('./products/admin/pages/settings')
@@ -49,6 +55,7 @@ export const moduleSettingsRegistry: Record<string, SettingsModuleConfig> = {
 }
 
 export const moduleApisRegistry: Record<string, () => Promise<any>> = {
+  'blog': () => import('./blog/admin/api/route'),
   'products': () => import('./products/admin/api/route'),
   'websites': () => import('./websites/admin/api/route')
 }

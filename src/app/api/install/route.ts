@@ -1,4 +1,4 @@
-import db from '@/_components/admin/_utils/db'
+import db from '@/_components/local/_utils/db'
 import { guardInstallApi } from '@/_utils/guard'
 import fs from 'fs'
 import path from 'path'
@@ -13,10 +13,11 @@ export async function GET() {
       status: 'success',
       settings,
       dbType: 'SQLite',
-      dbPath: '.data/admin/db.sqlite'
+      dbPath: '.data/db.sqlite'
     })
-  } catch (err: any) {
-    return Response.json({ status: 'error', error: err.message }, { status: 500 })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return Response.json({ status: 'error', error: message }, { status: 500 })
   }
 }
 
@@ -65,7 +66,8 @@ HOSTNAME=localhost
     }
 
     return Response.json({ status: 'error', error: 'Unknown action' }, { status: 400 })
-  } catch (err: any) {
-    return Response.json({ status: 'error', error: err.message }, { status: 500 })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return Response.json({ status: 'error', error: message }, { status: 500 })
   }
 }
