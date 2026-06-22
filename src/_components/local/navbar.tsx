@@ -8,7 +8,7 @@ interface NavbarProps {
 
 export default function LocalNavbar({ adminPath }: NavbarProps) {
   return (
-    <header className="sticky top-0 z-40 flex h-10 items-center justify-end border-b border-[var(--vscode-border)] bg-[var(--vscode-block-background)] px-4">
+    <header className="sticky top-0 z-40 flex h-10 items-center justify-end border-b border-[var(--vscode-border)] bg-[var(--vscode-side-bar-background)] px-4">
       <div className="flex items-center gap-2">
         <Theme>
           <Theme.ColorMode />

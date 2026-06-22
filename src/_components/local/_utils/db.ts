@@ -1,26 +1,26 @@
-import 'server-only'
-import Database from 'better-sqlite3'
-import path from 'path'
-import fs from 'fs'
+import "server-only";
+import Database from "better-sqlite3";
+import path from "path";
+import fs from "fs";
 
-const dbDir = path.join(process.cwd(), '.data')
+const dbDir = path.join(process.cwd(), ".data");
 
 // Ensure the directory exists before initializing SQLite
 if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true })
+  fs.mkdirSync(dbDir, { recursive: true });
 }
 
-const dbPath = path.join(dbDir, 'db.sqlite')
-const legacyDbPath = path.join(dbDir, 'admin', 'db.sqlite')
+const dbPath = path.join(dbDir, "db.sqlite");
+const legacyDbPath = path.join(dbDir, "admin", "db.sqlite");
 
 if (!fs.existsSync(dbPath) && fs.existsSync(legacyDbPath)) {
-  fs.copyFileSync(legacyDbPath, dbPath)
+  fs.copyFileSync(legacyDbPath, dbPath);
 }
 
-const db = new Database(dbPath)
+const db = new Database(dbPath);
 
 // Enable WAL mode for better performance
-db.pragma('journal_mode = WAL')
+db.pragma("journal_mode = WAL");
 
 // Migration logic to ensure existing table gets the new columns
 try {
@@ -31,13 +31,13 @@ try {
       created DATETIME DEFAULT CURRENT_TIMESTAMP,
       modified DATETIME DEFAULT CURRENT_TIMESTAMP
     )
-  `)
+  `);
   // Test query to see if new columns exist
-  db.prepare('SELECT created, modified FROM settings LIMIT 1').get()
+  db.prepare("SELECT created, modified FROM settings LIMIT 1").get();
 } catch {
-  console.log('Migrating settings table to add created/modified columns...')
+  console.log("Migrating settings table to add created/modified columns...");
   // Recreate table if columns are missing
-  db.exec('DROP TABLE IF EXISTS settings')
+  db.exec("DROP TABLE IF EXISTS settings");
   db.exec(`
     CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
@@ -45,12 +45,8 @@ try {
       created DATETIME DEFAULT CURRENT_TIMESTAMP,
       modified DATETIME DEFAULT CURRENT_TIMESTAMP
     )
-  `)
+  `);
 }
-
-// Seed default settings if they don't exist
-const insertStmt = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)')
-insertStmt.run('login_path', 'login')
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS databases (
@@ -65,7 +61,7 @@ db.exec(`
     created DATETIME DEFAULT CURRENT_TIMESTAMP,
     modified DATETIME DEFAULT CURRENT_TIMESTAMP
   )
-`)
+`);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS storages (
@@ -80,9 +76,10 @@ db.exec(`
     created DATETIME DEFAULT CURRENT_TIMESTAMP,
     modified DATETIME DEFAULT CURRENT_TIMESTAMP
   )
-`)
+`);
 
-db.prepare(`
+db.prepare(
+  `
   INSERT INTO databases (id, name, engine, path, size, status, last_backup, locked)
   VALUES (@id, @name, @engine, @path, @size, @status, @last_backup, @locked)
   ON CONFLICT(id) DO UPDATE SET
@@ -94,18 +91,20 @@ db.prepare(`
     last_backup = excluded.last_backup,
     locked = excluded.locked,
     modified = CURRENT_TIMESTAMP
-`).run({
-  id: 'default',
-  name: 'Default SQLite',
-  engine: 'SQLite',
-  path: '.data/db.sqlite',
-  size: 'System',
-  status: 'Online',
-  last_backup: 'Fallback',
-  locked: 1
-})
+`,
+).run({
+  id: "default",
+  name: "Default SQLite",
+  engine: "SQLite",
+  path: ".data/db.sqlite",
+  size: "System",
+  status: "Online",
+  last_backup: "Fallback",
+  locked: 1,
+});
 
-db.prepare(`
+db.prepare(
+  `
   INSERT INTO storages (id, name, driver, location, used, files, status, locked)
   VALUES (@id, @name, @driver, @location, @used, @files, @status, @locked)
   ON CONFLICT(id) DO UPDATE SET
@@ -117,15 +116,16 @@ db.prepare(`
     status = excluded.status,
     locked = excluded.locked,
     modified = CURRENT_TIMESTAMP
-`).run({
-  id: 'default',
-  name: 'Default Storage',
-  driver: 'Filesystem',
-  location: 'public/storage',
-  used: 'System',
-  files: 'Fallback',
-  status: 'Mounted',
-  locked: 1
-})
+`,
+).run({
+  id: "default",
+  name: "Default Storage",
+  driver: "Filesystem",
+  location: "public/storage",
+  used: "System",
+  files: "Fallback",
+  status: "Mounted",
+  locked: 1,
+});
 
-export default db
+export default db;

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { getAdminLoginHooks } from '@/_modules/registry'
 
 // Load hooks dynamically
@@ -54,11 +55,18 @@ export default function LocalLogin({ adminPath }: { adminPath: string }) {
         ))}
 
         <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center border border-[color-mix(in_srgb,var(--vscode-accent)_45%,transparent)] bg-[var(--vscode-block-background)] text-xl font-bold text-[var(--vscode-accent)]">
-            A
+          <div className="mx-auto flex h-14 w-14 items-center justify-center border border-[var(--vscode-border)] bg-[var(--vscode-block-background)]">
+            <Image
+              src="/images/logo.png"
+              alt=""
+              width={400}
+              height={400}
+              className="h-10 w-10 object-contain"
+              priority
+            />
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight text-[var(--vscode-editor-foreground)]">
-            Local Console
+            MTHAN.NET CLIENT CONSOLE
           </h2>
           <p className="text-sm text-[var(--vscode-description-foreground)]">
             Please sign in to access management console

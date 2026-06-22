@@ -1,17 +1,28 @@
 'use client'
 
 import { useEffect, useSyncExternalStore } from 'react'
-import { Monitor, Moon, Sun, type LucideIcon } from 'lucide-react'
+import { Moon, Sun, type LucideIcon } from 'lucide-react'
 
 type ThemePreference = 'light' | 'dark' | 'system'
 
 const options: { Icon: LucideIcon, label: string, value: ThemePreference }[] = [
   { Icon: Sun, label: 'Light mode', value: 'light' },
-  { Icon: Moon, label: 'Dark mode', value: 'dark' },
-  { Icon: Monitor, label: 'Auto mode', value: 'system' }
+  { Icon: Moon, label: 'Dark mode', value: 'dark' }
 ]
 
 const subscribers = new Set<() => void>()
+
+function subscribeHydrationChange() {
+  return () => {}
+}
+
+function getHydratedSnapshot() {
+  return true
+}
+
+function getServerHydratedSnapshot() {
+  return false
+}
 
 function resolveTheme(preference: ThemePreference) {
   if (typeof window === 'undefined') return 'light'
@@ -57,6 +68,12 @@ function subscribeThemeChange(subscriber: () => void) {
 }
 
 export default function ColorMode() {
+  const isHydrated = useSyncExternalStore(
+    subscribeHydrationChange,
+    getHydratedSnapshot,
+    getServerHydratedSnapshot
+  )
+
   const theme = useSyncExternalStore(
     subscribeThemeChange,
     getStoredTheme,
@@ -85,7 +102,7 @@ export default function ColorMode() {
   return (
     <div className="flex border border-[var(--vscode-border)] bg-[var(--vscode-block-background)]">
       {options.map((option) => {
-        const isActive = theme === option.value
+        const isActive = isHydrated && resolveTheme(theme) === option.value
         const Icon = option.Icon
 
         return (

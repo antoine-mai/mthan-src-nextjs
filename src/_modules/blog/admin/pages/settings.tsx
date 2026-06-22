@@ -1,6 +1,6 @@
 export default function BlogSettings() {
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="space-y-6">
       <div className="border border-slate-800 bg-slate-900/40 p-6 shadow-xl backdrop-blur-md">
         <div>
           <h4 className="text-lg font-bold text-slate-100">Blog Settings</h4>

@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function ProductsSettings() {
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6">
       <div className="bg-slate-900/40 border border-slate-800 backdrop-blur-md p-6 shadow-xl space-y-6">
         <div>
           <h4 className="text-lg font-bold text-slate-100">Products Catalog Settings</h4>

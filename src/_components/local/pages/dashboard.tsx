@@ -2,7 +2,8 @@ import React from 'react'
 
 export default function LocalDashboard() {
   const stats = [
-    { title: 'Total Users', value: '1,284', change: '+12.3%', trend: 'up', icon: 'US' },
+    { title: 'Applications', value: '4', change: '+1', trend: 'up', icon: 'AP' },
+    { title: 'Mounted Modules', value: '12', change: '+2', trend: 'up', icon: 'MD' },
     { title: 'Active Sessions', value: '412', change: '+8.4%', trend: 'up', icon: 'SE' },
     { title: 'Monthly Revenue', value: '$12,480', change: '+24.1%', trend: 'up', icon: 'MR' },
     { title: 'System Load', value: '24.2%', change: '-3.1%', trend: 'down', icon: 'LD' }
@@ -29,7 +30,7 @@ export default function LocalDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         {stats.map((stat) => (
           <div
             key={stat.title}
