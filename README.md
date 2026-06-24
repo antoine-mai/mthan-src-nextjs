@@ -24,7 +24,8 @@ This writes:
 Install the bundle as root:
 
 ```bash
-sudo ./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/antoine-mai/mthan-src-nextjs/main/scripts/install.sh -o install.sh
+sudo bash install.sh
 ```
 
 The installer will:
