@@ -3,7 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-ZIP_SOURCE="$ROOT_DIR/build/latest.zip"
+LOCAL_ZIP="$ROOT_DIR/build/latest.zip"
+REMOTE_ZIP_URL="https://raw.githubusercontent.com/antoine-mai/mthan-src-nextjs/main/build/latest.zip"
 INSTALL_DIR="/opt/mthan-src/nextjs"
 SERVICE_DIR="/etc/systemd/system"
 SERVICE_FILE="$SERVICE_DIR/mthan-src-nextjs@.service"
@@ -38,14 +39,21 @@ if ! command -v node >/dev/null 2>&1; then
   exit 1
 fi
 
-if [ ! -f "$ZIP_SOURCE" ]; then
-  echo "Bundle not found at $ZIP_SOURCE"
-  exit 1
-fi
-
 mkdir -p "$INSTALL_DIR"
 
-cp "$ZIP_SOURCE" "$TMP_ZIP"
+if [ -f "$LOCAL_ZIP" ]; then
+  cp "$LOCAL_ZIP" "$TMP_ZIP"
+else
+  echo "Local bundle not found, downloading from GitHub..."
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$REMOTE_ZIP_URL" -o "$TMP_ZIP"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -qO "$TMP_ZIP" "$REMOTE_ZIP_URL"
+  else
+    echo "curl or wget is required to download the bundle"
+    exit 1
+  fi
+fi
 
 unzip -oq "$TMP_ZIP" -d "$INSTALL_DIR"
 rm -f "$TMP_ZIP"

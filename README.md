@@ -24,14 +24,14 @@ This writes:
 Install the bundle as root:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/antoine-mai/mthan-src-nextjs/main/scripts/install.sh -o install.sh
-sudo bash install.sh
+curl -fsSL https://raw.githubusercontent.com/antoine-mai/mthan-src-nextjs/main/scripts/install.sh | sudo bash
 ```
 
 The installer will:
 
 - install `node` automatically on apt-based systems if it is missing
-- use `build/latest.zip` from this repository
+- use `build/latest.zip` from this repository when available
+- otherwise download `build/latest.zip` from GitHub raw
 - extract the zip into `/opt/mthan-src/nextjs`
 - create `mthan-src-nextjs@.service` in `/etc/systemd/system`
 - read per-user env files from `~/.mthan-src/nextjs/env`

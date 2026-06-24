@@ -45,6 +45,7 @@ EOF
 rm -rf "$STAGING_DIR"
 
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git add -f "$BUILD_DIR/$ZIP_NAME" "$BUILD_DIR/version.json"
     git add -A
     git commit --allow-empty -m "Build ${BUILD_VERSION}"
     git push
