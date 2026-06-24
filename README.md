@@ -30,8 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/antoine-mai/mthan-src-nextjs/main/s
 The installer will:
 
 - install `node` automatically on apt-based systems if it is missing
-- use `build/latest.zip` from this repository when available
-- otherwise download `build/latest.zip` from GitHub raw
+- always download `build/latest.zip` from GitHub raw
 - extract the zip into `/opt/mthan-src/nextjs`
 - create `mthan-src-nextjs@.service` in `/etc/systemd/system`
 - read per-user env files from `~/.mthan-src/nextjs/env`

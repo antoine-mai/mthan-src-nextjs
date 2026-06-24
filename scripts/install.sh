@@ -3,7 +3,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-LOCAL_ZIP="$ROOT_DIR/build/latest.zip"
 REMOTE_ZIP_URL="https://raw.githubusercontent.com/antoine-mai/mthan-src-nextjs/main/build/latest.zip"
 INSTALL_DIR="/opt/mthan-src/nextjs"
 SERVICE_DIR="/etc/systemd/system"
@@ -41,18 +40,14 @@ fi
 
 mkdir -p "$INSTALL_DIR"
 
-if [ -f "$LOCAL_ZIP" ]; then
-  cp "$LOCAL_ZIP" "$TMP_ZIP"
+echo "Downloading bundle from GitHub..."
+if command -v curl >/dev/null 2>&1; then
+  curl -fsSL "$REMOTE_ZIP_URL" -o "$TMP_ZIP"
+elif command -v wget >/dev/null 2>&1; then
+  wget -qO "$TMP_ZIP" "$REMOTE_ZIP_URL"
 else
-  echo "Local bundle not found, downloading from GitHub..."
-  if command -v curl >/dev/null 2>&1; then
-    curl -fsSL "$REMOTE_ZIP_URL" -o "$TMP_ZIP"
-  elif command -v wget >/dev/null 2>&1; then
-    wget -qO "$TMP_ZIP" "$REMOTE_ZIP_URL"
-  else
-    echo "curl or wget is required to download the bundle"
-    exit 1
-  fi
+  echo "curl or wget is required to download the bundle"
+  exit 1
 fi
 
 unzip -oq "$TMP_ZIP" -d "$INSTALL_DIR"
