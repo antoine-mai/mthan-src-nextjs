@@ -1,23 +1,23 @@
-import { hasEnvFile } from './dotenv'
+import { hasAdminInstallConfig } from './dotenv'
 import { redirect } from 'next/navigation'
 
 // Guards regular server pages: redirects to setup page if .env doesn't exist
 export function guardPage() {
-  if (!hasEnvFile()) {
+  if (!hasAdminInstallConfig()) {
     redirect('/install')
   }
 }
 
 // Guards the setup page: redirects back to home if .env already exists
 export function guardInstallPage() {
-  if (hasEnvFile()) {
+  if (hasAdminInstallConfig()) {
     redirect('/')
   }
 }
 
 // Guards regular API endpoints: returns a 503 JSON response if .env doesn't exist
 export function guardApi() {
-  if (!hasEnvFile()) {
+  if (!hasAdminInstallConfig()) {
     return Response.json(
       { error: 'Service Unavailable', message: 'System is not configured. Please visit /install to set up.' },
       { status: 503 }
@@ -28,7 +28,7 @@ export function guardApi() {
 
 // Guards the installation API: returns a 403 Forbidden JSON response if .env already exists
 export function guardInstallApi() {
-  if (hasEnvFile()) {
+  if (hasAdminInstallConfig()) {
     return Response.json(
       { error: 'Forbidden', message: 'System is already configured.' },
       { status: 403 }

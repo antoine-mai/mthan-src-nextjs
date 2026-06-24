@@ -1,9 +1,10 @@
 import fs from 'fs'
 import path from 'path'
 
+const envPath = path.join(process.cwd(), '.env')
+
 export function readEnv(key: string, defaultValue: string = ''): string {
   try {
-    const envPath = path.join(process.cwd(), '.env')
     if (fs.existsSync(envPath)) {
       const content = fs.readFileSync(envPath, 'utf8')
       const lines = content.split('\n')
@@ -25,10 +26,17 @@ export function getAdminPath(): string {
   return readEnv('ADMIN_PATH', 'admin')
 }
 
-export function hasEnvFile(): boolean {
+export function hasAdminInstallConfig(): boolean {
   try {
-    const envPath = path.join(process.cwd(), '.env')
-    return fs.existsSync(envPath)
+    if (!fs.existsSync(envPath)) {
+      return false
+    }
+
+    const content = fs.readFileSync(envPath, 'utf8')
+    return ['ADMIN_PATH', 'ADMIN_USER', 'ADMIN_PASS'].every(key => {
+      const pattern = new RegExp(`^${key}=.+$`, 'm')
+      return pattern.test(content)
+    })
   } catch {
     return false
   }

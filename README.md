@@ -21,19 +21,32 @@ This writes:
 
 ## Install
 
-Install the bundle as root:
+Install the app bundle as root:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/antoine-mai/mthan-src-nextjs/main/scripts/install.sh | sudo bash
 ```
 
-The installer will:
+This will:
 
 - install `node` automatically on apt-based systems if it is missing
 - always download `build/latest.zip` from GitHub raw
 - extract the zip into `/opt/mthan-src/nextjs`
 - create `mthan-src-nextjs@.service` in `/etc/systemd/system`
-- read per-user env files from `~/.mthan-src/nextjs/env`
+- create per-user env files at `~/.mthan-src/nextjs/.env` on first start
+- print a startup line in the systemd journal with user and port
+
+Install and start a specific user instance in one shot:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/antoine-mai/mthan-src-nextjs/main/scripts/install.sh | sudo bash -s -- --user <user>
+```
+
+This will do everything above, then also:
+
+- enable and start `mthan-src-nextjs@<user>`
+- write the first `~/.mthan-src/nextjs/.env` for that user if missing
+- print the service startup log to the terminal
 
 ## Run
 
@@ -46,12 +59,17 @@ sudo systemctl enable --now mthan-src-nextjs@<user>
 Override runtime settings by creating:
 
 ```bash
-~/.mthan-src/nextjs/env
+~/.mthan-src/nextjs/.env
 ```
 
 Typical values:
 
 ```bash
 PORT=3000
-HOSTNAME=0.0.0.0
+```
+
+Check the startup line with:
+
+```bash
+journalctl -u mthan-src-nextjs@<user> -n 50
 ```
