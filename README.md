@@ -10,7 +10,7 @@ bash scripts/build.sh
 
 This writes:
 
-- `build/standalone.zip`
+- `build/latest.zip`
 - `build/version.json`
 
 `build/version.json` includes:
@@ -24,28 +24,29 @@ This writes:
 Install the bundle as root:
 
 ```bash
-sudo bash scripts/install.sh build/standalone.zip
+sudo ./scripts/install.sh
 ```
 
 The installer will:
 
 - require `node` to be available
+- use `build/latest.zip` from this repository
 - extract the zip into `/opt/mthan-src/nextjs`
 - create `mthan-src-nextjs@.service` in `/etc/systemd/system`
-- create optional per-user env files under `/etc/mthan-src/nextjs`
+- read per-user env files from `~/.mthan-src/nextjs/env`
 
 ## Run
 
-Enable and start an instance for a Linux user:
+Enable and start an instance for a user:
 
 ```bash
 sudo systemctl enable --now mthan-src-nextjs@<user>
 ```
 
-You can override runtime settings per user by creating:
+Override runtime settings by creating:
 
 ```bash
-/etc/mthan-src/nextjs/<user>.env
+~/.mthan-src/nextjs/env
 ```
 
 Typical values:
