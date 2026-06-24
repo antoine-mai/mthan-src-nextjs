@@ -30,7 +30,7 @@ sudo bash install.sh
 
 The installer will:
 
-- require `node` to be available
+- install `node` automatically on apt-based systems if it is missing
 - use `build/latest.zip` from this repository
 - extract the zip into `/opt/mthan-src/nextjs`
 - create `mthan-src-nextjs@.service` in `/etc/systemd/system`

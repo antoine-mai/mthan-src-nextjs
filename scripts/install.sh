@@ -19,7 +19,22 @@ if [ "${EUID:-$(id -u)}" -ne 0 ]; then
 fi
 
 if ! command -v node >/dev/null 2>&1; then
-  echo "Node.js is not installed"
+  echo "Node.js is not installed, attempting to install..."
+  if command -v apt-get >/dev/null 2>&1; then
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get install -y nodejs npm unzip
+    if ! command -v node >/dev/null 2>&1 && command -v nodejs >/dev/null 2>&1; then
+      ln -sf "$(command -v nodejs)" /usr/local/bin/node
+    fi
+  else
+    echo "Automatic Node.js install is only supported on apt-based systems"
+    exit 1
+  fi
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "Node.js installation failed"
   exit 1
 fi
 
