@@ -1,17 +1,45 @@
 'use client'
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Database, HardDrive, LayoutDashboard, LogOut, Package, Settings, Workflow, type LucideIcon } from 'lucide-react'
+import { Circle, Code2, Database, HardDrive, LayoutDashboard, LogOut, Package, Settings, Workflow, type LucideIcon } from 'lucide-react'
 import Link from '@/_components/link'
 import { apisRegistry, moduleSettingsRegistry, pagesRegistry } from '@/_modules/registry'
+import { formatModuleDisplayName } from './_utils/module-name'
 
 interface SidebarProps {
   adminPath: string
 }
 
+const componentModuleKeys = new Set(['docker', 'golang', 'nginx', 'nodejs', 'pm2'])
+
+type SidebarModule = {
+  key: string
+  displayName?: string
+  path: string
+  active: boolean
+}
+
+function getFallbackModules(adminPath: string): SidebarModule[] {
+  const moduleKeys = Array.from(new Set([
+    ...Object.keys(pagesRegistry),
+    ...Object.keys(apisRegistry),
+    ...Object.keys(moduleSettingsRegistry)
+  ])).filter((key) => !componentModuleKeys.has(key)).sort()
+
+  return moduleKeys.map((key) => {
+    return {
+      key,
+      displayName: formatModuleDisplayName(key),
+      path: `/${adminPath}/modules/${key}`,
+      active: false
+    }
+  })
+}
+
 export default function LocalSidebar({ adminPath }: SidebarProps) {
   const currentPath = usePathname()
+  const [sidebarModules, setSidebarModules] = useState<SidebarModule[]>(() => getFallbackModules(adminPath))
   
   const menuItems: { Icon: LucideIcon, name: string, path: string }[] = [
     { Icon: LayoutDashboard, name: 'Overview', path: `/${adminPath}` },
@@ -19,6 +47,7 @@ export default function LocalSidebar({ adminPath }: SidebarProps) {
     { Icon: Database, name: 'Databases', path: `/${adminPath}/databases` },
     { Icon: Package, name: 'Modules', path: `/${adminPath}/modules` },
     { Icon: HardDrive, name: 'Storages', path: `/${adminPath}/storages` },
+    { Icon: Code2, name: 'API', path: `/${adminPath}/api` },
   ]
 
   const systemItems = [
@@ -28,22 +57,42 @@ export default function LocalSidebar({ adminPath }: SidebarProps) {
 
   const isSettingsActive = currentPath.startsWith(`/${adminPath}/system`)
 
-  const moduleKeys = Array.from(new Set([
-    ...Object.keys(pagesRegistry),
-    ...Object.keys(apisRegistry),
-    ...Object.keys(moduleSettingsRegistry)
-  ])).sort()
-
-  const sidebarModules = moduleKeys.map((key) => {
-    const settings = moduleSettingsRegistry[key]
-    return {
-      key,
-      name: settings?.label.replace(/ Config$/, '') ?? key,
-      path: `/${adminPath}/modules/${key}`
-    }
-  })
-
   const isModulesActive = currentPath.startsWith(`/${adminPath}/modules`)
+
+  const loadModules = useCallback(async () => {
+    try {
+      const res = await fetch(`/${adminPath}/api/modules`)
+      if (!res.ok) return
+
+      const data = await res.json()
+      const modules = Array.isArray(data.modules) ? data.modules : []
+
+      setSidebarModules(modules.map((item: SidebarModule) => ({
+        key: item.key,
+        displayName: item.displayName ?? item.key,
+        path: `/${adminPath}/modules/${item.key}`,
+        active: Boolean(item.active)
+      })))
+    } catch {
+      setSidebarModules(getFallbackModules(adminPath))
+    }
+  }, [adminPath])
+
+  useEffect(() => {
+    void loadModules()
+  }, [loadModules])
+
+  useEffect(() => {
+    const handleModuleStatusChanged = () => {
+      void loadModules()
+    }
+
+    window.addEventListener('module-status-changed', handleModuleStatusChanged)
+
+    return () => {
+      window.removeEventListener('module-status-changed', handleModuleStatusChanged)
+    }
+  }, [loadModules])
 
   return (
     <aside className="sticky top-0 flex h-screen w-64 flex-col border-r border-[var(--vscode-border)] bg-[var(--vscode-side-bar-background)]">
@@ -91,13 +140,30 @@ export default function LocalSidebar({ adminPath }: SidebarProps) {
                     <Link
                       key={mod.path}
                       href={mod.path}
-                      className={`block py-1.5 px-3 text-xs transition duration-200 ${
+                      className={`flex items-center justify-between gap-3 py-1.5 px-3 text-xs transition duration-200 ${
                         currentPath === mod.path || currentPath.startsWith(mod.path + '/')
                           ? 'font-semibold text-[var(--vscode-accent)]'
                           : 'text-[var(--vscode-description-foreground)] hover:text-[var(--vscode-editor-foreground)]'
                       }`}
                     >
-                      {mod.name}
+                      <span>{mod.displayName ?? mod.key}</span>
+                      <span
+                        title={mod.active ? 'Active' : 'Inactive'}
+                        aria-hidden="true"
+                        className="relative ml-auto flex h-3 w-3 shrink-0 items-center justify-center"
+                      >
+                        <Circle
+                          className={`h-2.5 w-2.5 ${
+                            mod.active
+                              ? 'text-emerald-300 fill-emerald-400 drop-shadow-[0_0_2px_rgba(74,222,128,0.3)]'
+                              : 'text-[var(--vscode-border)] fill-transparent'
+                          }`}
+                          strokeWidth={1.7}
+                        />
+                        {mod.active && (
+                          <span className="pointer-events-none absolute left-[2px] top-[2px] h-[2px] w-[2px] bg-white/70" />
+                        )}
+                      </span>
                     </Link>
                   ))}
                 </div>

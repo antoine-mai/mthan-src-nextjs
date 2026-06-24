@@ -30,11 +30,6 @@ export interface LoginHookConfig {
 export const pagesRegistry: Record<string, () => Promise<PageModule>> = {
   'apps': () => import('./apps/pages/index'),
   'blog': () => import('./blog/pages/index'),
-  'docker': () => import('./docker/pages/index'),
-  'golang': () => import('./golang/pages/index'),
-  'nginx': () => import('./nginx/pages/index'),
-  'nodejs': () => import('./nodejs/pages/index'),
-  'pm2': () => import('./pm2/pages/index'),
   'products': () => import('./products/pages/index'),
   'websites': () => import('./websites/pages/index')
 }
@@ -42,11 +37,6 @@ export const pagesRegistry: Record<string, () => Promise<PageModule>> = {
 export const apisRegistry: Record<string, () => Promise<ApiModule>> = {
   'apps': () => import('./apps/api/route'),
   'blog': () => import('./blog/api/route'),
-  'docker': () => import('./docker/api/route'),
-  'golang': () => import('./golang/api/route'),
-  'nginx': () => import('./nginx/api/route'),
-  'nodejs': () => import('./nodejs/api/route'),
-  'pm2': () => import('./pm2/api/route'),
   'products': () => import('./products/api/route'),
   'websites': () => import('./websites/api/route')
 }
@@ -59,26 +49,6 @@ export const moduleSettingsRegistry: Record<string, SettingsModuleConfig> = {
   'blog': {
     label: 'Blog Config',
     importFn: () => import('./blog/admin/pages/settings')
-  },
-  'docker': {
-    label: 'Docker Config',
-    importFn: () => import('./docker/admin/pages/settings')
-  },
-  'golang': {
-    label: 'Golang Config',
-    importFn: () => import('./golang/admin/pages/settings')
-  },
-  'nginx': {
-    label: 'Nginx Config',
-    importFn: () => import('./nginx/admin/pages/settings')
-  },
-  'nodejs': {
-    label: 'Nodejs Config',
-    importFn: () => import('./nodejs/admin/pages/settings')
-  },
-  'pm2': {
-    label: 'Pm2 Config',
-    importFn: () => import('./pm2/admin/pages/settings')
   },
   'products': {
     label: 'Products Config',

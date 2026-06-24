@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# mthan-src-nextjs
 
-## Getting Started
+## Build
 
-First, run the development server:
+Create the standalone bundle and version manifest in `build/`:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bash scripts/build.sh
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This writes:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `build/standalone.zip`
+- `build/version.json`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`build/version.json` includes:
 
-## Learn More
+- `version`: app version from `package.json`
+- `buildVersion`: build tag in the form `vYYYYMMDDHHMMSS`
+- `zip`: generated zip file name
 
-To learn more about Next.js, take a look at the following resources:
+## Install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Install the bundle as root:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+sudo bash scripts/install.sh build/standalone.zip
+```
 
-## Deploy on Vercel
+The installer will:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- require `node` to be available
+- extract the zip into `/opt/mthan-src/nextjs`
+- create `mthan-src-nextjs@.service` in `/etc/systemd/system`
+- create optional per-user env files under `/etc/mthan-src/nextjs`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Run
+
+Enable and start an instance for a Linux user:
+
+```bash
+sudo systemctl enable --now mthan-src-nextjs@<user>
+```
+
+You can override runtime settings per user by creating:
+
+```bash
+/etc/mthan-src/nextjs/<user>.env
+```
+
+Typical values:
+
+```bash
+PORT=3000
+HOSTNAME=0.0.0.0
+```

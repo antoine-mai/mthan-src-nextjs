@@ -14,6 +14,7 @@ const getContextAdminPath = () => {
 export default function LocalApplications() {
   const adminPath = getContextAdminPath()
   const [appList, setAppList] = useState<Application[]>([])
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
   const loadApps = () => {
     const stored = localStorage.getItem('apps_list')
@@ -40,6 +41,8 @@ export default function LocalApplications() {
         currentPage="list"
         title="Applications"
         description="Local application surfaces managed outside the module registry."
+        isAddModalOpen={isAddModalOpen}
+        onAddModalOpenChange={setIsAddModalOpen}
         onAppAdded={loadApps}
       />
 
@@ -59,6 +62,13 @@ export default function LocalApplications() {
             </button>
             <button className="border border-sky-500/20 bg-sky-500/10 px-3 py-2 font-semibold text-sky-300">
               Online
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              className="border border-[color-mix(in_srgb,var(--vscode-accent)_45%,transparent)] bg-[var(--vscode-block-background)] px-3 py-2 font-semibold text-[var(--vscode-accent)] transition hover:bg-[var(--vscode-list-hover-background)]"
+            >
+              Add Application
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
+import { InlineScript } from '@/_components/inline-script'
 import "./globals.css"
 
 const monaco = localFont({
@@ -37,7 +38,7 @@ export default function RootLayout({
       className={`${monaco.variable} h-full antialiased`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <InlineScript html={themeScript} />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

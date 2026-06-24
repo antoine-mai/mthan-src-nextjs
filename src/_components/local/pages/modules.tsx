@@ -1,40 +1,52 @@
-import { apisRegistry, moduleSettingsRegistry, pagesRegistry } from '@/_modules/registry'
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import { Power } from 'lucide-react'
 import Link from '@/_components/link'
 
-function getModules() {
-  const moduleKeys = Array.from(new Set([
-    ...Object.keys(pagesRegistry),
-    ...Object.keys(apisRegistry),
-    ...Object.keys(moduleSettingsRegistry)
-  ])).sort()
-
-  return moduleKeys.map((key) => {
-    const settings = moduleSettingsRegistry[key]
-    const surfaces = [
-      pagesRegistry[key] ? 'Page' : null,
-      apisRegistry[key] ? 'API' : null,
-      settings ? 'Settings' : null
-    ].filter(Boolean)
-
-    return {
-      key,
-      label: settings?.label.replace(/ Config$/, '') ?? key,
-      route: `/${key}`,
-      surfaces: surfaces.join(', ') || 'None',
-      status: 'Mounted'
-    }
-  })
+type ModuleCatalogItem = {
+  key: string
+  displayName: string
+  path: string
+  category: string
+  config: string
+  status: 'Active' | 'Inactive'
+  active: boolean
 }
 
 export default function LocalModules({ adminPath }: { adminPath: string }) {
-  const modules = getModules()
-  const settingsCount = modules.filter((moduleItem) => moduleItem.surfaces.includes('Settings')).length
+  const [modules, setModules] = useState<ModuleCatalogItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [busyKey, setBusyKey] = useState<string | null>(null)
+
+  const loadModules = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/${adminPath}/api/modules`)
+      const data = await res.json()
+      const nextModules = Array.isArray(data.modules) ? data.modules : []
+      setModules(nextModules)
+    } catch {
+      setModules([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    void loadModules()
+  }, [adminPath])
+
+  const activeCount = useMemo(
+    () => modules.filter((moduleItem) => moduleItem.active).length,
+    [modules]
+  )
 
   const metrics = [
     { label: 'Modules', value: modules.length.toString(), tone: 'text-slate-100' },
-    { label: 'Pages', value: modules.filter((moduleItem) => moduleItem.surfaces.includes('Page')).length.toString(), tone: 'text-sky-300' },
-    { label: 'APIs', value: modules.filter((moduleItem) => moduleItem.surfaces.includes('API')).length.toString(), tone: 'text-emerald-300' },
-    { label: 'Settings', value: settingsCount.toString(), tone: 'text-indigo-300' }
+    { label: 'Active', value: activeCount.toString(), tone: 'text-emerald-300' },
+    { label: 'Pages', value: modules.filter((moduleItem) => moduleItem.category.includes('Page')).length.toString(), tone: 'text-sky-300' },
+    { label: 'Settings', value: modules.filter((moduleItem) => moduleItem.category.includes('Settings')).length.toString(), tone: 'text-indigo-300' }
   ]
 
   return (
@@ -44,11 +56,15 @@ export default function LocalModules({ adminPath }: { adminPath: string }) {
           <div>
             <h2 className="text-xl font-bold text-slate-100">Modules</h2>
             <p className="mt-1 text-xs text-slate-500">
-              Registered page, API, and settings modules.
+              Registered folder-backed page, API, and settings modules.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button className="border border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-slate-800">
+            <button
+              type="button"
+              onClick={() => void loadModules()}
+              className="border border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-slate-800"
+            >
               Refresh
             </button>
           </div>
@@ -92,8 +108,8 @@ export default function LocalModules({ adminPath }: { adminPath: string }) {
             <thead>
               <tr className="border-b border-slate-800 font-semibold text-slate-500">
                 <th className="pb-3">Module</th>
-                <th className="pb-3">Route</th>
-                <th className="pb-3">Surfaces</th>
+                <th className="pb-3">Path</th>
+                <th className="pb-3">Category</th>
                 <th className="pb-3">Status</th>
                 <th className="pb-3 text-right">Actions</th>
               </tr>
@@ -102,17 +118,55 @@ export default function LocalModules({ adminPath }: { adminPath: string }) {
               {modules.map((moduleItem) => (
                 <tr key={moduleItem.key} className="text-slate-300 transition hover:bg-slate-800/10">
                   <td className="py-4">
-                    <div className="font-semibold text-slate-200">{moduleItem.label}</div>
-                    <div className="mt-1 text-xs text-slate-500">{moduleItem.key}</div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        disabled={busyKey === moduleItem.key}
+                        onClick={async () => {
+                          setBusyKey(moduleItem.key)
+                          try {
+                            await fetch(`/${adminPath}/api/modules`, {
+                              method: 'PATCH',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                key: moduleItem.key,
+                                active: !moduleItem.active
+                              })
+                            })
+                            await loadModules()
+                          } finally {
+                            setBusyKey(null)
+                          }
+                        }}
+                        className={`inline-flex min-w-[92px] items-center justify-center gap-1.5 border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] shadow-sm transition ${
+                          moduleItem.active
+                            ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/20'
+                            : 'border-slate-600 bg-slate-900 text-slate-300 hover:border-slate-500 hover:bg-slate-800'
+                        } disabled:cursor-wait disabled:opacity-60`}
+                      >
+                        <Power className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                        {moduleItem.active ? 'Disable' : 'Enable'}
+                      </button>
+                      <div>
+                        <div className="font-semibold text-slate-200">{moduleItem.displayName}</div>
+                        <div className="mt-1 text-xs text-slate-500">{moduleItem.key}</div>
+                      </div>
+                    </div>
                   </td>
                   <td className="py-4">
                     <code className="border border-slate-800 bg-slate-955 px-2 py-1 text-xs text-slate-400">
-                      {moduleItem.route}
+                      {moduleItem.path}
                     </code>
                   </td>
-                  <td className="py-4 text-slate-400">{moduleItem.surfaces}</td>
+                  <td className="py-4 text-slate-400">{moduleItem.category}</td>
                   <td className="py-4">
-                    <span className="inline-block border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-400">
+                    <span
+                      className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-bold uppercase ${
+                        moduleItem.active
+                          ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400'
+                          : 'border-slate-700 bg-slate-900 text-slate-500'
+                      }`}
+                    >
                       {moduleItem.status}
                     </span>
                   </td>
@@ -126,6 +180,20 @@ export default function LocalModules({ adminPath }: { adminPath: string }) {
                   </td>
                 </tr>
               ))}
+              {loading && modules.length === 0 && (
+                <tr>
+                  <td className="py-8 text-center text-sm text-slate-500" colSpan={5}>
+                    Loading modules...
+                  </td>
+                </tr>
+              )}
+              {!loading && modules.length === 0 && (
+                <tr>
+                  <td className="py-8 text-center text-sm text-slate-500" colSpan={5}>
+                    No modules found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

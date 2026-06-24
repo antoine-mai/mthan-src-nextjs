@@ -1,6 +1,7 @@
 import { getAdminPath, readEnv } from '@/_utils/dotenv'
 import { guardApi } from '@/_utils/guard'
 import { getAdminModuleApi } from '@/_modules/registry'
+import { listModuleCatalog, setModuleStatus } from '@/_components/local/_utils/db/modules'
 
 async function handleRequest(
   method: string,
@@ -63,6 +64,38 @@ async function handleRequest(
         platform: process.platform,
       },
     })
+  }
+
+  if (route === 'modules') {
+    if (method === 'GET') {
+      return Response.json({
+        status: 'success',
+        modules: listModuleCatalog()
+      })
+    }
+
+    if (method === 'PATCH') {
+      try {
+        const body = await request.json() as { key?: string; active?: boolean }
+        if (!body.key || typeof body.active !== 'boolean') {
+          return Response.json({ error: 'Invalid request body' }, { status: 400 })
+        }
+
+        const updated = setModuleStatus(body.key, body.active)
+        if (!updated) {
+          return Response.json({ error: 'Module not found' }, { status: 404 })
+        }
+
+        return Response.json({
+          status: 'success',
+          module: updated
+        })
+      } catch {
+        return Response.json({ error: 'Invalid request body' }, { status: 400 })
+      }
+    }
+
+    return Response.json({ error: `Method ${method} not allowed` }, { status: 405 })
   }
 
   // B. Dynamic Module APIs hooked from external modules

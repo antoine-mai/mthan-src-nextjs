@@ -24,13 +24,23 @@ const getContextAdminPath = (propPath?: string) => {
   return 'admin'
 }
 
-export default function ApplicationsSettings({ adminPath: propAdminPath }: { adminPath?: string }) {
+interface ApplicationsSettingsProps {
+  adminPath?: string
+  defaultApplicationsDir?: string
+}
+
+export default function ApplicationsSettings({
+  adminPath: propAdminPath,
+  defaultApplicationsDir
+}: ApplicationsSettingsProps) {
   const adminPath = getContextAdminPath(propAdminPath)
-  const [appsDir, setAppsDir] = useState('')
+  const defaultAppsDir = defaultApplicationsDir || '../apps'
+  const [appsDir, setAppsDir] = useState(defaultAppsDir)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -70,7 +80,7 @@ export default function ApplicationsSettings({ adminPath: propAdminPath }: { adm
         if (!disposed && response.ok && data.status === 'success') {
           const settings = data.settings ?? []
           const dirSetting = settings.find(s => s.key === 'applications_dir')
-          setAppsDir(dirSetting ? dirSetting.value : '../apps')
+          setAppsDir(dirSetting ? dirSetting.value : defaultAppsDir)
         }
       } catch (loadError) {
         if (!disposed) {
@@ -97,6 +107,8 @@ export default function ApplicationsSettings({ adminPath: propAdminPath }: { adm
         currentPage="settings"
         title="Applications Configuration"
         description="Manage system execution defaults and working directories for external application tasks."
+        isAddModalOpen={isAddModalOpen}
+        onAddModalOpenChange={setIsAddModalOpen}
       />
 
       {(message || error) && (
@@ -127,7 +139,7 @@ export default function ApplicationsSettings({ adminPath: propAdminPath }: { adm
                 value={appsDir}
                 onChange={e => setAppsDir(e.target.value)}
                 disabled={loading || saving}
-                placeholder="../apps"
+                placeholder={defaultAppsDir}
                 className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 text-xs text-slate-100 font-mono focus:outline-none focus:border-indigo-500 transition disabled:opacity-50"
               />
               <span className="block text-[10px] text-slate-500">

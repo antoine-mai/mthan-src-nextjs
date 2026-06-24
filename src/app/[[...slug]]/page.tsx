@@ -10,6 +10,14 @@ interface PageProps {
   params: Promise<{ slug?: string[] }>
 }
 
+const getDefaultApplicationsDir = () => {
+  if (process.platform === 'linux') {
+    return 'htdocs'
+  }
+
+  return '../apps'
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const adminPath = getAdminPath()
@@ -255,7 +263,7 @@ export default async function CatchAllPage({ params }: PageProps) {
           }
           return (
             <Local.Layout adminPath={adminPath}>
-              <Component />
+              <Component adminPath={adminPath} defaultApplicationsDir={getDefaultApplicationsDir()} />
             </Local.Layout>
           )
         }
@@ -299,5 +307,5 @@ export default async function CatchAllPage({ params }: PageProps) {
     notFound()
   }
 
-  return <Component />
+  return <Component adminPath={adminPath} />
 }

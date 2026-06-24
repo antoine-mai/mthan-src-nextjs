@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { X, Upload, GitBranch, FolderUp, Globe } from 'lucide-react'
 import GitHubConnect from '@/_components/github'
 import Link from '@/_components/link'
+import ModuleLayout from '@/_components/local/modules/module-layout'
 
 const Github = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -33,6 +34,8 @@ interface AppsHeaderProps {
   currentPage: 'list' | 'settings'
   title: string
   description: string
+  isAddModalOpen: boolean
+  onAddModalOpenChange: (open: boolean) => void
   onAppAdded?: () => void
 }
 
@@ -41,9 +44,10 @@ export default function AppsHeader({
   currentPage,
   title,
   description,
+  isAddModalOpen,
+  onAddModalOpenChange,
   onAppAdded
 }: AppsHeaderProps) {
-  const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'upload' | 'clone' | 'github' | 'public'>('upload')
   const [selectedTemplate, setSelectedTemplate] = useState('')
   const [appName, setAppName] = useState('')
@@ -99,7 +103,7 @@ export default function AppsHeader({
   }
 
   const closeModal = () => {
-    setIsOpen(false)
+    onAddModalOpenChange(false)
     setAppName('')
     setRepoUrl('')
     setRepoBranch('main')
@@ -140,13 +144,14 @@ export default function AppsHeader({
 
   return (
     <>
-      <header className="border-b border-slate-800 pb-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-slate-100">{title}</h2>
-            <p className="mt-1 text-xs text-slate-500">{description}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+      <ModuleLayout
+        title={title}
+        description={description}
+        moduleKey="apps"
+        adminPath={adminPath}
+        settingsHref={`/${adminPath}/modules/apps/settings`}
+        actions={
+          <>
             <Link
               href={`/${adminPath}/modules/apps`}
               className={`inline-flex h-9 items-center justify-center border border-slate-800 px-4 text-xs font-semibold transition ${
@@ -157,28 +162,11 @@ export default function AppsHeader({
             >
               Apps List
             </Link>
-            <Link
-              href={`/${adminPath}/modules/apps/settings`}
-              className={`inline-flex h-9 items-center justify-center border border-slate-800 px-4 text-xs font-semibold transition ${
-                currentPage === 'settings'
-                  ? 'bg-slate-950 text-slate-200 hover:bg-slate-900'
-                  : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-              }`}
-            >
-              Settings
-            </Link>
-            <button
-              type="button"
-              onClick={() => setIsOpen(true)}
-              className="inline-flex h-9 items-center justify-center border border-[color-mix(in_srgb,var(--vscode-accent)_45%,transparent)] bg-[var(--vscode-block-background)] px-4 text-xs font-semibold text-[var(--vscode-accent)] transition hover:bg-[var(--vscode-list-hover-background)]"
-            >
-              Add Application
-            </button>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      >
 
-      {isOpen && (
+      {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-6" role="dialog" aria-modal="true">
           <div className="w-full max-w-2xl border border-[var(--vscode-border)] bg-[var(--vscode-editor-background)] shadow-2xl">
             <div className="flex h-11 items-center justify-between border-b border-[var(--vscode-border)] px-4">
@@ -399,6 +387,7 @@ export default function AppsHeader({
           </div>
         </div>
       )}
+      </ModuleLayout>
     </>
   )
 }

@@ -1,5 +1,7 @@
+'use client'
+
 import React from 'react'
-import { Activity, CircleCheck } from 'lucide-react'
+import { Activity, CircleCheck, RefreshCw } from 'lucide-react'
 import Theme from '../theme'
 
 interface NavbarProps {
@@ -13,6 +15,15 @@ export default function LocalNavbar({ adminPath }: NavbarProps) {
         <Theme>
           <Theme.ColorMode />
         </Theme>
+        <button
+          type="button"
+          aria-label="Update"
+          title="Update"
+          onClick={() => window.location.reload()}
+          className="flex h-7 w-7 items-center justify-center border border-[var(--vscode-border)] bg-[var(--vscode-block-background)] text-[var(--vscode-description-foreground)] transition hover:bg-[var(--vscode-list-hover-background)] hover:text-[var(--vscode-editor-foreground)]"
+        >
+          <RefreshCw className="h-4 w-4" aria-hidden="true" strokeWidth={1.8} />
+        </button>
         <a
           href={`/${adminPath}/api/stats`}
           target="_blank"

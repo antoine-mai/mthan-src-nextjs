@@ -115,7 +115,7 @@ export default function ColorMode() {
             onClick={() => selectTheme(option.value)}
             className={`flex h-7 w-7 items-center justify-center transition ${
               isActive
-                ? 'bg-[var(--vscode-block-background)] text-[var(--vscode-accent)] shadow-[inset_0_0_0_1px_var(--vscode-accent)]'
+                ? 'bg-[color-mix(in_srgb,var(--vscode-accent)_14%,var(--vscode-block-background))] text-[color-mix(in_srgb,var(--vscode-accent)_72%,var(--vscode-editor-foreground))] shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--vscode-accent)_22%,var(--vscode-border))]'
                 : 'text-[var(--vscode-description-foreground)] hover:bg-[var(--vscode-list-hover-background)] hover:text-[var(--vscode-editor-foreground)]'
             }`}
           >
